@@ -57,3 +57,43 @@ if( x == currentX || y == currentY ) return true;
 -Piece를 원소로 갖는 8 x 8 의 ArrayList를 가진다.
 printChessBoard()
 체스 보드를 프린트 한다.
+
+
+
+
+우선순위 순
+
+1. 핵심기능 - game logic
+ButtonClickListener에서 selectFlag 로 분기하는 이벤트 처리
+SELECT일 때 - 클릭된 좌표정보를 이용해 chessBoard의 char selectedPiece 변수 변경
+MOVE 일 때 - 클릭된 좌표정보를 이용해 chessBoard 인스턴스의 mainBoard 갱신, 변경사항을 ChessGUI에 반영
+
+각각의 변경사항은 GUI 화면의 JLabel message를 갱신해서 표시한다.
+
+2. 핵심기능 - newGame
+newGame 시 mainBoard에 이전 게임의 정보가 남아있다.
+하나의 게임을 관리하는 ChessGame 클래스를 만들고, 초기화 할 때  singleton하게 구현된 ChessBoard 클래스를 사용한다.
+
+3. 부가기능 - chess board graphic
+현재 체스판의 아이콘의 흑백이 제대로 표시되지 않고 있다. 체스판은 흑백의 격자무늬, piece의 이동에 따라 판의 무늬가 바뀌는 일도 없게 한다. 아마도 체스 배경이 piece그림에 투영되면 될 것 같은데, piece를 getSubimage로 자를 때부터 이미 배경 색을 포함하는 정사각형으로 잘라져서 불가능할까?
+
+4. 부가기능 - save, restore, resign
+save를 하면 현재 게임 상태를 serialization ( 그런데 이 과정이 필요할까?) 해서 File I/O를 통해 저장한다.
+restore를 하면 저장된 게임 상태를 다시 복원한다.
+resign하면 resign 버튼을 누른 player의 상대 플레이어가 이겼음을 표시하고 new Game을 누르도록 유도한다.
+
+@@@@ 고난도
+5. 부가기능 - local server
+같은 wifi를 이용하고 있으면 내가 local server에서 Chess application을 구동시키고 있을 때 해당 URL로 접근하여 두명의 플레이어가 대전가능하다. 가능하다면 이 부분은 발전 시켜서 WEB/UI Basic 과제로도 제출할 수 있으면 좋겠다.
+
+방만들기 기능
+1명이 만들면 웹 페이지에 생성된 방이 표시되고, 다른 플레이어가 해당 방을 방을 클릭해 게임을 시작할 수 있다.
+
+로그인 기능을 추가한다. ( + 회원가입 기능)
+게임의 결과를 저장한다. 승패를 포인트로 환산한다.
+획득한 포인트 별로 랭크를 부여한다. 랭크 간 승부 결과는 포인트 가감산에 차등적으로 반영한다.
+채팅 패널을 추가한다.
+
+궁금한 점
+Move 클래스에서 이동 상황을 처리할 때 ChessGame 인스턴스가 필요한 건 가장 최심부의 isPossibleMoveForRook 과
+isPossibleMoveForBishop 뿐인데 이 두 메소드를 위하여 3단계 위의 메소드부터 ChessGame chessGame을 인자로 받아 계속 넘겨주어야 하나?
