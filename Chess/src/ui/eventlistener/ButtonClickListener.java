@@ -20,12 +20,14 @@ public class ButtonClickListener implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println(chessgame.getSelectedX() + ", " + chessgame.getSelectedY() + "selected");
+		
 		JButton btn = (JButton)e.getSource();
 		Icon tempIcon;
 		int row = (int)btn.getClientProperty("row");
 		int column = (int)btn.getClientProperty("column");
 		
-		if (chessgui.getSelectFlag() == ChessGUI.SELECT) {
+		if (chessgame.getSelectFlag() == ChessGame.SELECT) {
 			if (chessgame.getBoard(row, column) == 'o') {
 				chessgui.setMessage("no piece selected.");
 				return;
@@ -43,42 +45,39 @@ public class ButtonClickListener implements ActionListener{
 
 			String message = "clicked row " + row + ", column " + column + " Chess piece "
 					+ chessgame.getBoard(row, column) + " selected.";
-			chessgui.setSelectedButton(row, column);
+			//chessgui.setSelectedButton(row, column);
 			chessgame.setSelectedPiece(row, column); // notify ChessGame
 														// instance on which
 														// piece is selected
+			System.out.println("select & show selected piece : " + chessgame.getSelectedPiece());
 			chessgui.setMessage(message);
-			chessgui.setSelectFlag(ChessGUI.MOVE); // set selectFlag to MOVE
+			chessgame.setSelectFlag(ChessGame.MOVE); // set selectFlag to MOVE
 
 		} else { // when selectFlag is set to MOVE
-			JButton selectedBtn = chessgui.getSelectedButton();
+			JButton selectedBtn = chessgui.getButton(chessgame.getSelectedX(), chessgame.getSelectedY()); // chessgui.getSelectedButton();
 			int moveResult = Move.movePiece(chessgame.getSelectedX(), 
 											chessgame.getSelectedY(), 
 											row, 
 											column, 
 											chessgame);
 					
-			if (moveResult == Move.SUCCESS) {		
-				chessgame.setBoard(row, column, chessgame.getBoard((int)selectedBtn.getClientProperty("row"), 
-					(int)selectedBtn.getClientProperty("column")));
-				chessgame.setBoard((int)selectedBtn.getClientProperty("row"), 
-					(int)selectedBtn.getClientProperty("column"), 
-					'o');
-				
-				System.out.println("turn increase start");
+			if (moveResult == Move.SUCCESS) {	
+//				chessgame.setBoard(chessgame.getSelectedX(), 
+//					chessgame.getSelectedY(), 
+//					'o');
+//				chessgame.setBoard(row, column, chessgame.getSelectedPiece());
+//				
 				chessgame.increaseTurnCount();
-				System.out.println("turn increase end " + chessgame.getTurnCount());
 				
-				chessgame.printBoard(); // FOR TEST ONLY
 				System.out.println();
 				
 				// chessGUI에서 표시하는 아이콘을 바꿔준다.
 				tempIcon = selectedBtn.getIcon();
 				btn.setIcon(tempIcon);
-				chessgui.getSelectedButton().setIcon(null); // set start position icon empty.
+				//chessgui.getSelectedButton().setIcon(null); // set start position icon empty.
+				selectedBtn.setIcon(null);
 				
-				// set selectFlag to SELECT
-				chessgui.setSelectFlag(ChessGUI.SELECT);
+				chessgame.printBoard();
 				
 				// set superClass message
 				chessgui.setMessage("select piece.");
@@ -89,11 +88,19 @@ public class ButtonClickListener implements ActionListener{
 			} else if (moveResult == Move.CANNOT_TAKE_ALLEY) {
 				chessgui.setMessage("you cannot take your own piece.");
 			} else if (moveResult == Move.VICTORY) {
-				chessgui.setMessage("You Win!!!");
+				if (chessgame.getTurnCount() % 2 == 1) {
+					chessgui.setMessage("Checkmate!!! Black player Win!!!");
+				} else {
+					chessgui.setMessage("Checkmate!!! White player Win!!!");
+				}
 			} else {
 				chessgui.setMessage("Uncaught Exception Occured!!!");
 			}
+			
+			// set selectFlag to SELECT
+			chessgame.setSelectFlag(ChessGame.SELECT);
 		}
+		
 	}
 
 }

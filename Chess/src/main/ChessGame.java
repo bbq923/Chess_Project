@@ -12,7 +12,10 @@ public class ChessGame {
 	private int selectedX, selectedY; // selectFlag == SELECT 일 때 선택한 위치는
 										// ButtonClickListener에서 넘겨 주어
 										// selectedX, selectedY에 저장된다.
-
+	public static final int SELECT = 0, MOVE = 1;
+	private static int selectFlag = SELECT; // SELECT 일 때는 piece를 선택하는 동작, MOVE 일 때는 piece를 이동시키는 동작.
+	//private JButton selectedButton; // SELECT 상태일 때 선택한 버튼을 ButtonClickListener에서 이 변수에 저장.
+	
 	// Constructor
 	public ChessGame() {
 		initBoard();
@@ -45,7 +48,6 @@ public class ChessGame {
 	}
 	
 	public void increaseTurnCount() {
-		System.out.println("plus");
 		turnCount++;
 	}
 
@@ -66,6 +68,14 @@ public class ChessGame {
 		return chessboard[selectedX][selectedY];
 	}
 
+	public int getSelectFlag() {
+		return selectFlag;
+	}
+	
+	public void setSelectFlag(int status) {
+		this.selectFlag = status;
+	}
+	
 	// 보드 출력
 	public void printBoard() {
 		for (int i = 0; i < 8; i++) {

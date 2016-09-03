@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
@@ -46,9 +47,6 @@ public class ChessGUI {
 		ROOK, KNIGHT, BISHOP, KING, QUEEN, BISHOP, KNIGHT, ROOK
 	};
 	public static final int BLACK = 0, WHITE = 1;
-	public static final int SELECT = 0, MOVE = 1;
-	private static int selectFlag = SELECT; // SELECT 일 때는 piece를 선택하는 동작, MOVE 일 때는 piece를 이동시키는 동작.
-	private JButton selectedButton; // SELECT 상태일 때 선택한 버튼을 ButtonClickListener에서 이 변수에 저장.
 	public static ChessGame myGame; // 새로운 게임을 시작할 때(new 버튼을 누를 때)마다 myGame = new ChessGame(); 을 해준다.
 	
 	public ChessGUI() {
@@ -152,6 +150,8 @@ public class ChessGUI {
 			}
 		}
 		
+		
+		
 		/*
 		 * fill the chess board
 		 */
@@ -199,10 +199,21 @@ public class ChessGUI {
 	}
 
 	/**
-	 * Initializes the icons of the initial chess board piece places
+	 * Initializes the icons based on chessgame.getboard(x, y) value
 	 */
 	private final void setupNewGame() {
 		myGame = new ChessGame(); // init new ChessGame
+		
+		message.setText("Make your move!");
+		
+		// remove ActionListeners from previous game.
+		for ( JButton[] jbtnArr : chessBoardSquares) {
+			for ( JButton jbtn : jbtnArr) {
+				for ( ActionListener al : jbtn.getActionListeners()) {
+					jbtn.removeActionListener(al);
+				}
+			}
+		}
 		
 		// put client property "row" and "column" for each JButton in 8 by 8
 		// board. and add event listener
@@ -211,62 +222,108 @@ public class ChessGUI {
 				chessBoardSquares[ii][jj].putClientProperty("row", ii);
 				chessBoardSquares[ii][jj].putClientProperty("column", jj);
 				chessBoardSquares[ii][jj].addActionListener(new ButtonClickListener(this));
-			}
+			} 
+			
 		}
 		
-		message.setText("Make your move!");
+		// set up piece icons
+		initImage();
 		
-		// set up the black pieces
-		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
-			chessBoardSquares[0][ii].setIcon(new ImageIcon(
-					chessPieceImages[BLACK][STARTING_ROW[ii]]));
-		}
-		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
-			chessBoardSquares[1][ii].setIcon(new ImageIcon(
-					chessPieceImages[BLACK][PAWN]));
-		}
+//		// set up the black pieces
+//		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
+//			chessBoardSquares[0][ii].setIcon(new ImageIcon(
+//					chessPieceImages[BLACK][STARTING_ROW[ii]]));
+//		}
+//		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
+//			chessBoardSquares[1][ii].setIcon(new ImageIcon(
+//					chessPieceImages[BLACK][PAWN]));
+//		}
+//		
+//		// set up the empty pieces 
+//		for (int ii = 2; ii < 6; ii++) {
+//			for (int jj = 0; jj < STARTING_ROW.length; jj++) {
+//				chessBoardSquares[ii][jj].setIcon(null);
+//			}
+//		}
+//		
+//		// set up the white pieces
+//		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
+//			chessBoardSquares[6][ii].setIcon(new ImageIcon(
+//					chessPieceImages[WHITE][PAWN]));
+//		}
+//		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
+//			chessBoardSquares[7][ii].setIcon(new ImageIcon(
+//					chessPieceImages[WHITE][STARTING_ROW[ii]]));
+//		}
 		
-		// set up the empty pieces 
-		for (int ii = 2; ii < 6; ii++) {
-			for (int jj = 0; jj < STARTING_ROW.length; jj++) {
-				chessBoardSquares[ii][jj].setIcon(null);
-			}
-		}
-		
-		// set up the white pieces
-		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
-			chessBoardSquares[6][ii].setIcon(new ImageIcon(
-					chessPieceImages[WHITE][PAWN]));
-		}
-		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
-			chessBoardSquares[7][ii].setIcon(new ImageIcon(
-					chessPieceImages[WHITE][STARTING_ROW[ii]]));
-		}
-		
+		myGame.printBoard();
 	}
 	
+	private void initImage() {
+		for (int ii = 0; ii < STARTING_ROW.length; ii++) {
+			for (int jj = 0; jj < STARTING_ROW.length; jj++) {
+				char currentPiece = myGame.getBoard(ii, jj);
+				if (currentPiece == 'R') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[BLACK][ROOK]));
+				} else if (currentPiece == 'r') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[WHITE][ROOK]));
+				} else if (currentPiece == 'N') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[BLACK][KNIGHT]));
+				} else if (currentPiece == 'n') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[WHITE][KNIGHT]));
+				} else if (currentPiece == 'B') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[BLACK][BISHOP]));
+				} else if (currentPiece == 'b') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[WHITE][BISHOP]));
+				} else if (currentPiece == 'K') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[BLACK][KING]));
+				} else if (currentPiece == 'k') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[WHITE][KING]));
+				} else if (currentPiece == 'Q') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[BLACK][QUEEN]));
+				} else if (currentPiece == 'q') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[WHITE][QUEEN]));
+				} else if (currentPiece == 'P') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[BLACK][PAWN]));
+				} else if (currentPiece == 'p') {
+					chessBoardSquares[ii][jj].setIcon(new ImageIcon(
+							chessPieceImages[WHITE][PAWN]));
+				}	else {
+					chessBoardSquares[ii][jj].setIcon(null);
+				}
+			}
+		}
+	}
 	// 외부 클래스(이벤트 리스너)에서 JLabel message를 set 해주기 위한 메소드
 	public void setMessage(String message) {
 		this.message.setText(message);
 	}
 	
 	// 외부 클래스(이벤트 리스너)에서 JButton selectedButton을 set 해주기 위한 메소드
-	public void setSelectedButton(int ii, int jj) {
-		this.selectedButton = chessBoardSquares[ii][jj];
-	}
-	
-	public JButton getSelectedButton() {
-		return this.selectedButton;
-	}
-	
-	public void setSelectFlag(int i) {
-		this.selectFlag = i;
-	}
-	
-	public int getSelectFlag() {
-		return selectFlag;
-	}
+//	public void setSelectedButton(int ii, int jj) {
+//		this.selectedButton = chessBoardSquares[ii][jj];
+//	}
+//	
+//	public JButton getSelectedButton() {
+//		return this.selectedButton;
+//	}
 
+	// chessBoardSquares로부터 JButton을 리턴 받는 메소드
+	public JButton getButton(int row, int column) {
+		return chessBoardSquares[row][column];
+	}
+	
 	// main 함수는 MainTest 부분으로 이동.
 /*
 	public static void main(String[] args) {

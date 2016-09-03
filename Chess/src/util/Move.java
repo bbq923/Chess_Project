@@ -59,11 +59,11 @@ public class Move {
 		}
 		
 		if(destPiece != 'o') { // 목표 위치에 같은 편 유닛이 있는 경우 처리
-			if((piece > 95) && (destPiece > 95)) {
+			if((piece > 95) && (destPiece > 95)) { // 백이 백을 잡으려고 하는 경우
 				System.out.println("같은 편 유닛을 잡을 수는 없습니다.");
 				return CANNOT_TAKE_ALLEY;
 			}
-			if ((piece < 95) && (destPiece < 95)) {
+			if ((piece < 95) && (destPiece < 95)) { // 흑이 흑을 잡으려고 하는 경우
 				System.out.println("같은 편 유닛을 잡을 수는 없습니다.");
 				return CANNOT_TAKE_ALLEY;
 			}
@@ -175,19 +175,18 @@ public class Move {
 		// 한 번에 한 칸씩 움직이는 폰과 킹, 장애물에 구애받지 않는 나이트를 제외한 룩, 비숍, 퀸에 대해 검사 
 		if (piece == 'r' || piece == 'R') {
 			return isPossibleMoveForRook(prevX, prevY, postX, postY, cBoard);
-		}
-		
-		if (piece == 'b' || piece == 'B') {
+		} else if (piece == 'b' || piece == 'B') {
 			return isPossibleMoveForBishop(prevX, prevY, postX, postY, cBoard);
-		}
-		
-		if (piece == 'q' || piece == 'Q') {
+		} else if (piece == 'q' || piece == 'Q') {
 			if (isPossibleMoveForRook(prevX, prevY, postX, postY, cBoard) == SUCCESS || isPossibleMoveForBishop(prevX, prevY, postX, postY, cBoard) == SUCCESS) {
 				return SUCCESS;
+			} else {
+				return BLOCKING_PATH;
 			}
+		} else {
+			return SUCCESS;
 		}
 		
-		return SUCCESS;
 	}
 	
 	public static int isPossibleMoveForRook(int prevX, int prevY, int postX, int postY, ChessGame cBoard) {
